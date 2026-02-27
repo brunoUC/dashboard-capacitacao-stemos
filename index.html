@@ -4,39 +4,43 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard - Capacitação stemOS</title>
+    <link rel="icon" type="image/svg+xml" href="favicon.svg">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
     <style>
         :root {
-            --primary: #6366f1;
-            --primary-dark: #4f46e5;
-            --primary-light: #a5b4fc;
-            --bg: #0f172a;
-            --bg-card: #1e293b;
-            --bg-card-hover: #334155;
-            --text: #f1f5f9;
-            --text-muted: #94a3b8;
-            --border: #334155;
-            --success: #22c55e;
-            --warning: #f59e0b;
-            --danger: #ef4444;
-            --info: #3b82f6;
-            --gradient-1: linear-gradient(135deg, #6366f1, #8b5cf6);
-            --gradient-2: linear-gradient(135deg, #3b82f6, #06b6d4);
-            --gradient-3: linear-gradient(135deg, #22c55e, #14b8a6);
-            --gradient-4: linear-gradient(135deg, #f59e0b, #ef4444);
+            --primary: #5C4590;
+            --primary-dark: #4A3676;
+            --primary-light: #7E6BAD;
+            --bg: #E2DCD4;
+            --bg-card: #ffffff;
+            --bg-card-hover: #f5f2ee;
+            --text: #1a1a2e;
+            --text-muted: #6b7280;
+            --border: #d1cbc3;
+            --success: #5DA86B;
+            --warning: #FEC236;
+            --danger: #F05042;
+            --info: #5C4590;
+            --gradient-1: linear-gradient(135deg, #5C4590, #7E6BAD);
+            --gradient-2: linear-gradient(135deg, #FEC236, #f5d76e);
+            --gradient-3: linear-gradient(135deg, #5DA86B, #7cc98a);
+            --gradient-4: linear-gradient(135deg, #F05042, #f47c72);
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; }
 
         body {
-            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            font-family: 'Space Grotesk', 'Segoe UI', system-ui, -apple-system, sans-serif;
             background: var(--bg);
             color: var(--text);
             min-height: 100vh;
         }
 
         .header {
-            background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+            background: linear-gradient(135deg, #5C4590 0%, #4A3676 100%);
             border-bottom: 1px solid var(--border);
             padding: 1.5rem 2rem;
             display: flex;
@@ -50,14 +54,16 @@
 
         .logo {
             width: 48px; height: 48px;
-            background: var(--gradient-1);
-            border-radius: 12px;
-            display: flex; align-items: center; justify-content: center;
-            font-size: 1.5rem; font-weight: 800; color: white;
+            border-radius: 50%;
+            overflow: hidden;
+            flex-shrink: 0;
+        }
+        .logo img, .logo svg {
+            width: 100%; height: 100%;
         }
 
-        .header h1 { font-size: 1.5rem; font-weight: 700; }
-        .header p { color: var(--text-muted); font-size: 0.85rem; }
+        .header h1 { font-size: 1.5rem; font-weight: 700; color: #fff; }
+        .header p { color: rgba(255,255,255,0.7); font-size: 0.85rem; }
 
         .filters {
             background: var(--bg-card);
@@ -122,7 +128,7 @@
         }
         .kpi-card:hover {
             transform: translateY(-2px);
-            box-shadow: 0 8px 25px rgba(0,0,0,0.3);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.1);
         }
 
         .kpi-card::before {
@@ -135,8 +141,8 @@
         .kpi-card:nth-child(2)::before { background: var(--gradient-2); }
         .kpi-card:nth-child(3)::before { background: var(--gradient-3); }
         .kpi-card:nth-child(4)::before { background: var(--gradient-4); }
-        .kpi-card:nth-child(5)::before { background: linear-gradient(135deg, #ec4899, #8b5cf6); }
-        .kpi-card:nth-child(6)::before { background: linear-gradient(135deg, #14b8a6, #3b82f6); }
+        .kpi-card:nth-child(5)::before { background: linear-gradient(135deg, #FEC236, #5C4590); }
+        .kpi-card:nth-child(6)::before { background: linear-gradient(135deg, #5DA86B, #FEC236); }
 
         .kpi-icon {
             width: 40px; height: 40px;
@@ -145,12 +151,12 @@
             font-size: 1.2rem;
             margin-bottom: 0.75rem;
         }
-        .kpi-card:nth-child(1) .kpi-icon { background: rgba(99,102,241,0.15); color: #818cf8; }
-        .kpi-card:nth-child(2) .kpi-icon { background: rgba(59,130,246,0.15); color: #60a5fa; }
-        .kpi-card:nth-child(3) .kpi-icon { background: rgba(34,197,94,0.15); color: #4ade80; }
-        .kpi-card:nth-child(4) .kpi-icon { background: rgba(245,158,11,0.15); color: #fbbf24; }
-        .kpi-card:nth-child(5) .kpi-icon { background: rgba(236,72,153,0.15); color: #f472b6; }
-        .kpi-card:nth-child(6) .kpi-icon { background: rgba(20,184,166,0.15); color: #2dd4bf; }
+        .kpi-card:nth-child(1) .kpi-icon { background: rgba(92,69,144,0.15); color: #7E6BAD; }
+        .kpi-card:nth-child(2) .kpi-icon { background: rgba(254,194,54,0.15); color: #FEC236; }
+        .kpi-card:nth-child(3) .kpi-icon { background: rgba(93,168,107,0.15); color: #5DA86B; }
+        .kpi-card:nth-child(4) .kpi-icon { background: rgba(240,80,66,0.15); color: #F05042; }
+        .kpi-card:nth-child(5) .kpi-icon { background: rgba(92,69,144,0.1); color: #5C4590; }
+        .kpi-card:nth-child(6) .kpi-icon { background: rgba(92,69,144,0.15); color: #7E6BAD; }
 
         .kpi-value { font-size: 2rem; font-weight: 800; line-height: 1; margin-bottom: 0.25rem; }
         .kpi-label { font-size: 0.8rem; color: var(--text-muted); }
@@ -170,7 +176,7 @@
             padding: 1.25rem;
             transition: box-shadow 0.2s;
         }
-        .card:hover { box-shadow: 0 4px 15px rgba(0,0,0,0.2); }
+        .card:hover { box-shadow: 0 4px 15px rgba(0,0,0,0.08); }
 
         .card-title {
             font-size: 1rem;
@@ -203,8 +209,8 @@
             transition: fill 0.2s, filter 0.2s;
         }
         .map-container svg path:hover {
-            filter: brightness(1.3);
-            stroke: white;
+            filter: brightness(1.15);
+            stroke: var(--primary);
             stroke-width: 1.5;
         }
 
@@ -219,10 +225,10 @@
             z-index: 1000;
             display: none;
             min-width: 200px;
-            box-shadow: 0 8px 30px rgba(0,0,0,0.4);
+            box-shadow: 0 8px 30px rgba(0,0,0,0.15);
         }
 
-        .map-tooltip h4 { font-size: 0.95rem; margin-bottom: 0.5rem; color: var(--primary-light); }
+        .map-tooltip h4 { font-size: 0.95rem; margin-bottom: 0.5rem; color: var(--primary); }
         .map-tooltip .tt-row { display: flex; justify-content: space-between; padding: 0.15rem 0; }
         .map-tooltip .tt-label { color: var(--text-muted); }
         .map-tooltip .tt-value { font-weight: 700; }
@@ -309,8 +315,8 @@
             font-size: 0.7rem;
             font-weight: 700;
         }
-        .badge-frc { background: rgba(99,102,241,0.2); color: #a5b4fc; }
-        .badge-ftc { background: rgba(34,197,94,0.2); color: #86efac; }
+        .badge-frc { background: rgba(92,69,144,0.15); color: #5C4590; }
+        .badge-ftc { background: rgba(93,168,107,0.15); color: #4a8f57; }
 
         .no-data { color: var(--text-muted); font-style: italic; }
 
@@ -331,7 +337,7 @@
 <body>
     <div class="header">
         <div class="header-left">
-            <div class="logo">S</div>
+            <div class="logo"><svg viewBox="0 0 150 151" xmlns="http://www.w3.org/2000/svg"><rect width="149.224" height="150.888" rx="74.6121" fill="#5C4590"/><path d="M67.8319 29H81.3923C85.0432 29 88.0029 31.9597 88.0029 35.6106C88.0029 39.2616 90.9626 42.2213 94.6136 42.2213C98.2645 42.2213 101.224 45.181 101.224 48.8319V49.0015C101.224 52.7461 98.1887 55.7816 94.444 55.7816H94.2745C90.6236 55.7816 87.6639 52.8219 87.6639 49.171C87.6639 45.52 84.7042 42.5603 81.0532 42.5603H68.3405C64.5958 42.5603 61.5603 45.5958 61.5603 49.3405V61.8837C61.5603 65.6284 64.5958 68.6639 68.3405 68.6639H81.3923C85.0432 68.6639 88.0029 71.6236 88.0029 75.2745C88.0029 78.9255 90.9626 81.8852 94.6136 81.8852C98.2645 81.8852 101.224 84.8449 101.224 88.4958V102.056C101.224 105.707 98.2645 108.667 94.6136 108.667C90.9626 108.667 88.0029 111.626 88.0029 115.277C88.0029 118.928 85.0432 121.888 81.3923 121.888H67.8319C64.181 121.888 61.2213 118.928 61.2213 115.277C61.2213 111.626 58.2616 108.667 54.6106 108.667C50.9597 108.667 48 105.707 48 102.056V101.887C48 98.142 51.0355 95.1065 54.7802 95.1065H54.9497C58.6006 95.1065 61.5603 98.0662 61.5603 101.717C61.5603 105.368 64.52 108.328 68.171 108.328H80.8837C84.6284 108.328 87.6639 105.292 87.6639 101.548V89.0044C87.6639 85.2597 84.6284 82.2242 80.8837 82.2242H67.8319C64.181 82.2242 61.2213 79.2645 61.2213 75.6136C61.2213 71.9626 58.2616 69.0029 54.6106 69.0029C50.9597 69.0029 48 66.0432 48 62.3923V48.8319C48 45.181 50.9597 42.2213 54.6106 42.2213C58.2616 42.2213 61.2213 39.2616 61.2213 35.6106C61.2213 31.9597 64.181 29 67.8319 29Z" fill="#E2DCD4"/></svg></div>
             <div>
                 <h1>Dashboard de Capacitação stemOS</h1>
                 <p>Portal de Ensino — Conclusões por Equipe</p>
@@ -622,7 +628,7 @@ CE,Zenkai,32577,6,11,5`;
         BA: "M 295 118 L 318 112 L 342 118 L 365 128 L 378 142 L 372 165 L 355 178 L 332 182 L 308 175 L 292 162 L 285 142 Z",
         TO: "M 232 112 L 252 108 L 268 115 L 275 132 L 268 152 L 252 158 L 238 152 L 230 135 Z",
         GO: "M 248 158 L 268 152 L 288 158 L 298 172 L 292 188 L 275 195 L 258 190 L 248 178 Z",
-        DF: "M 282 170 L 290 168 L 295 175 L 288 178 L 282 175 Z",
+        DF: "M 276 165 L 292 161 L 300 174 L 292 183 L 276 179 Z",
         MT: "M 148 128 L 178 118 L 208 122 L 232 132 L 242 152 L 235 172 L 218 185 L 192 188 L 168 180 L 152 165 L 145 148 Z",
         MS: "M 208 188 L 228 182 L 248 188 L 258 205 L 248 222 L 232 228 L 215 222 L 205 208 Z",
         MG: "M 288 162 L 312 158 L 338 165 L 358 178 L 358 202 L 342 218 L 318 222 L 298 215 L 282 202 L 278 182 Z",
@@ -709,7 +715,7 @@ CE,Zenkai,32577,6,11,5`;
             const el = document.createElementNS('http://www.w3.org/2000/svg', 'path');
             el.setAttribute('d', path);
             el.setAttribute('data-state', code);
-            el.setAttribute('fill', '#334155');
+            el.setAttribute('fill', '#d1cbc3');
 
             // State label
             const bbox = getPathCenter(path);
@@ -718,7 +724,7 @@ CE,Zenkai,32577,6,11,5`;
             text.setAttribute('y', bbox.y);
             text.setAttribute('text-anchor', 'middle');
             text.setAttribute('dominant-baseline', 'central');
-            text.setAttribute('fill', 'white');
+            text.setAttribute('fill', '#1a1a2e');
             text.setAttribute('font-size', '8');
             text.setAttribute('font-weight', '700');
             text.setAttribute('pointer-events', 'none');
@@ -744,11 +750,11 @@ CE,Zenkai,32577,6,11,5`;
     }
 
     function getColorScale(value, max) {
-        if (value === 0) return '#334155';
+        if (value === 0) return '#d1cbc3';
         const t = Math.min(value / Math.max(max, 1), 1);
-        const r = Math.round(99 + (34 - 99) * t);
-        const g = Math.round(102 + (197 - 102) * t);
-        const b = Math.round(241 + (94 - 241) * t);
+        const r = Math.round(92 + (93 - 92) * t);
+        const g = Math.round(69 + (168 - 69) * t);
+        const b = Math.round(144 + (107 - 144) * t);
         return `rgb(${r},${g},${b})`;
     }
 
@@ -767,7 +773,7 @@ CE,Zenkai,32577,6,11,5`;
         document.querySelectorAll('#mapContainer svg path').forEach(el => {
             const code = el.getAttribute('data-state');
             const sd = stateData[code];
-            el.setAttribute('fill', sd ? getColorScale(sd.certified, maxCert) : '#1e293b');
+            el.setAttribute('fill', sd ? getColorScale(sd.certified, maxCert) : '#d1cbc3');
 
             el.onmouseenter = (e) => {
                 const tooltip = document.getElementById('mapTooltip');
@@ -835,23 +841,23 @@ CE,Zenkai,32577,6,11,5`;
                     {
                         label: 'Conclusões',
                         data: completions,
-                        backgroundColor: 'rgba(99,102,241,0.7)',
+                        backgroundColor: 'rgba(92,69,144,0.7)',
                         borderRadius: 4,
                     },
                     {
                         label: 'Certificados',
                         data: certified,
-                        backgroundColor: 'rgba(34,197,94,0.7)',
+                        backgroundColor: 'rgba(93,168,107,0.7)',
                         borderRadius: 4,
                     }
                 ]
             },
             options: {
                 responsive: true,
-                plugins: { legend: { labels: { color: '#94a3b8' } } },
+                plugins: { legend: { labels: { color: '#6b7280' } } },
                 scales: {
-                    x: { ticks: { color: '#94a3b8' }, grid: { color: 'rgba(51,65,85,0.5)' } },
-                    y: { ticks: { color: '#94a3b8' }, grid: { color: 'rgba(51,65,85,0.5)' } }
+                    x: { ticks: { color: '#6b7280' }, grid: { color: 'rgba(0,0,0,0.1)' } },
+                    y: { ticks: { color: '#6b7280' }, grid: { color: 'rgba(0,0,0,0.1)' } }
                 }
             }
         });
@@ -866,8 +872,8 @@ CE,Zenkai,32577,6,11,5`;
                 labels: ['FRC', 'FTC'],
                 datasets: [{
                     data: [frcData.length, ftcData.length],
-                    backgroundColor: ['rgba(99,102,241,0.8)', 'rgba(34,197,94,0.8)'],
-                    borderColor: ['#6366f1', '#22c55e'],
+                    backgroundColor: ['rgba(92,69,144,0.8)', 'rgba(93,168,107,0.8)'],
+                    borderColor: ['#5C4590', '#5DA86B'],
                     borderWidth: 2,
                 }]
             },
@@ -875,7 +881,7 @@ CE,Zenkai,32577,6,11,5`;
                 responsive: true,
                 cutout: '65%',
                 plugins: {
-                    legend: { labels: { color: '#94a3b8', font: { size: 14 } } },
+                    legend: { labels: { color: '#6b7280', font: { size: 14 } } },
                 }
             }
         });
@@ -892,23 +898,23 @@ CE,Zenkai,32577,6,11,5`;
                     {
                         label: 'Inscritos',
                         data: enrolledArr,
-                        backgroundColor: 'rgba(59,130,246,0.6)',
+                        backgroundColor: 'rgba(254,194,54,0.6)',
                         borderRadius: 4,
                     },
                     {
                         label: 'Certificados',
                         data: certArr,
-                        backgroundColor: 'rgba(245,158,11,0.6)',
+                        backgroundColor: 'rgba(240,80,66,0.6)',
                         borderRadius: 4,
                     }
                 ]
             },
             options: {
                 responsive: true,
-                plugins: { legend: { labels: { color: '#94a3b8' } } },
+                plugins: { legend: { labels: { color: '#6b7280' } } },
                 scales: {
-                    x: { ticks: { color: '#94a3b8' }, grid: { color: 'rgba(51,65,85,0.5)' } },
-                    y: { ticks: { color: '#94a3b8' }, grid: { color: 'rgba(51,65,85,0.5)' } }
+                    x: { ticks: { color: '#6b7280' }, grid: { color: 'rgba(0,0,0,0.1)' } },
+                    y: { ticks: { color: '#6b7280' }, grid: { color: 'rgba(0,0,0,0.1)' } }
                 }
             }
         });
@@ -933,7 +939,7 @@ CE,Zenkai,32577,6,11,5`;
 
         document.getElementById('modalityStats').innerHTML = `
             <div style="margin-bottom:1.5rem;">
-                <h3 style="font-size:0.95rem;margin-bottom:0.75rem;color:#a5b4fc;">FRC <span style="color:var(--text-muted);font-weight:400;">(${frcS.teams} equipes)</span></h3>
+                <h3 style="font-size:0.95rem;margin-bottom:0.75rem;color:#5C4590;">FRC <span style="color:var(--text-muted);font-weight:400;">(${frcS.teams} equipes)</span></h3>
                 <div class="progress-bar-container">
                     <div class="progress-label"><span>Inscritos</span><span>${frcS.enrolled}</span></div>
                     <div class="progress-track"><div class="progress-fill" style="width:${(frcS.enrolled/maxEnrolled)*100}%;background:var(--gradient-1);"></div></div>
@@ -948,7 +954,7 @@ CE,Zenkai,32577,6,11,5`;
                 </div>
             </div>
             <div>
-                <h3 style="font-size:0.95rem;margin-bottom:0.75rem;color:#86efac;">FTC <span style="color:var(--text-muted);font-weight:400;">(${ftcS.teams} equipes)</span></h3>
+                <h3 style="font-size:0.95rem;margin-bottom:0.75rem;color:#4a8f57;">FTC <span style="color:var(--text-muted);font-weight:400;">(${ftcS.teams} equipes)</span></h3>
                 <div class="progress-bar-container">
                     <div class="progress-label"><span>Inscritos</span><span>${ftcS.enrolled}</span></div>
                     <div class="progress-track"><div class="progress-fill" style="width:${(ftcS.enrolled/maxEnrolled)*100}%;background:var(--gradient-1);"></div></div>
