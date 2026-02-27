@@ -1,0 +1,1054 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - Capacitação stemOS</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
+    <style>
+        :root {
+            --primary: #6366f1;
+            --primary-dark: #4f46e5;
+            --primary-light: #a5b4fc;
+            --bg: #0f172a;
+            --bg-card: #1e293b;
+            --bg-card-hover: #334155;
+            --text: #f1f5f9;
+            --text-muted: #94a3b8;
+            --border: #334155;
+            --success: #22c55e;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --info: #3b82f6;
+            --gradient-1: linear-gradient(135deg, #6366f1, #8b5cf6);
+            --gradient-2: linear-gradient(135deg, #3b82f6, #06b6d4);
+            --gradient-3: linear-gradient(135deg, #22c55e, #14b8a6);
+            --gradient-4: linear-gradient(135deg, #f59e0b, #ef4444);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+            border-bottom: 1px solid var(--border);
+            padding: 1.5rem 2rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .header-left { display: flex; align-items: center; gap: 1rem; }
+
+        .logo {
+            width: 48px; height: 48px;
+            background: var(--gradient-1);
+            border-radius: 12px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 1.5rem; font-weight: 800; color: white;
+        }
+
+        .header h1 { font-size: 1.5rem; font-weight: 700; }
+        .header p { color: var(--text-muted); font-size: 0.85rem; }
+
+        .filters {
+            background: var(--bg-card);
+            border-bottom: 1px solid var(--border);
+            padding: 1rem 2rem;
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+
+        .filter-group { display: flex; flex-direction: column; gap: 0.3rem; }
+        .filter-group label { font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em; font-weight: 600; }
+
+        .filter-group select, .filter-group input {
+            background: var(--bg);
+            border: 1px solid var(--border);
+            color: var(--text);
+            padding: 0.5rem 0.75rem;
+            border-radius: 8px;
+            font-size: 0.875rem;
+            min-width: 180px;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+
+        .filter-group select:focus, .filter-group input:focus { border-color: var(--primary); }
+        .filter-group select option { background: var(--bg); color: var(--text); }
+
+        .btn-reset {
+            background: var(--gradient-1);
+            color: white;
+            border: none;
+            padding: 0.5rem 1.2rem;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.875rem;
+            font-weight: 600;
+            align-self: flex-end;
+            transition: opacity 0.2s;
+        }
+        .btn-reset:hover { opacity: 0.85; }
+
+        .main { padding: 1.5rem 2rem; max-width: 1600px; margin: 0 auto; }
+
+        /* KPI Cards */
+        .kpi-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .kpi-card {
+            background: var(--bg-card);
+            border-radius: 16px;
+            padding: 1.25rem;
+            border: 1px solid var(--border);
+            position: relative;
+            overflow: hidden;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .kpi-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.3);
+        }
+
+        .kpi-card::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0;
+            height: 3px;
+        }
+        .kpi-card:nth-child(1)::before { background: var(--gradient-1); }
+        .kpi-card:nth-child(2)::before { background: var(--gradient-2); }
+        .kpi-card:nth-child(3)::before { background: var(--gradient-3); }
+        .kpi-card:nth-child(4)::before { background: var(--gradient-4); }
+        .kpi-card:nth-child(5)::before { background: linear-gradient(135deg, #ec4899, #8b5cf6); }
+        .kpi-card:nth-child(6)::before { background: linear-gradient(135deg, #14b8a6, #3b82f6); }
+
+        .kpi-icon {
+            width: 40px; height: 40px;
+            border-radius: 10px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 1.2rem;
+            margin-bottom: 0.75rem;
+        }
+        .kpi-card:nth-child(1) .kpi-icon { background: rgba(99,102,241,0.15); color: #818cf8; }
+        .kpi-card:nth-child(2) .kpi-icon { background: rgba(59,130,246,0.15); color: #60a5fa; }
+        .kpi-card:nth-child(3) .kpi-icon { background: rgba(34,197,94,0.15); color: #4ade80; }
+        .kpi-card:nth-child(4) .kpi-icon { background: rgba(245,158,11,0.15); color: #fbbf24; }
+        .kpi-card:nth-child(5) .kpi-icon { background: rgba(236,72,153,0.15); color: #f472b6; }
+        .kpi-card:nth-child(6) .kpi-icon { background: rgba(20,184,166,0.15); color: #2dd4bf; }
+
+        .kpi-value { font-size: 2rem; font-weight: 800; line-height: 1; margin-bottom: 0.25rem; }
+        .kpi-label { font-size: 0.8rem; color: var(--text-muted); }
+
+        /* Layout grid */
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .card {
+            background: var(--bg-card);
+            border-radius: 16px;
+            border: 1px solid var(--border);
+            padding: 1.25rem;
+            transition: box-shadow 0.2s;
+        }
+        .card:hover { box-shadow: 0 4px 15px rgba(0,0,0,0.2); }
+
+        .card-title {
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            display: flex; align-items: center; gap: 0.5rem;
+        }
+
+        .card-full { grid-column: 1 / -1; }
+
+        /* Map */
+        .map-container {
+            position: relative;
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .map-container svg {
+            width: 100%;
+            max-width: 550px;
+            height: auto;
+        }
+
+        .map-container svg path {
+            stroke: var(--bg);
+            stroke-width: 1;
+            cursor: pointer;
+            transition: fill 0.2s, filter 0.2s;
+        }
+        .map-container svg path:hover {
+            filter: brightness(1.3);
+            stroke: white;
+            stroke-width: 1.5;
+        }
+
+        .map-tooltip {
+            position: fixed;
+            background: var(--bg-card);
+            border: 1px solid var(--primary);
+            border-radius: 12px;
+            padding: 0.85rem 1rem;
+            font-size: 0.8rem;
+            pointer-events: none;
+            z-index: 1000;
+            display: none;
+            min-width: 200px;
+            box-shadow: 0 8px 30px rgba(0,0,0,0.4);
+        }
+
+        .map-tooltip h4 { font-size: 0.95rem; margin-bottom: 0.5rem; color: var(--primary-light); }
+        .map-tooltip .tt-row { display: flex; justify-content: space-between; padding: 0.15rem 0; }
+        .map-tooltip .tt-label { color: var(--text-muted); }
+        .map-tooltip .tt-value { font-weight: 700; }
+
+        /* Chart containers */
+        .chart-wrapper { position: relative; width: 100%; }
+        .chart-wrapper canvas { width: 100% !important; }
+
+        /* Rankings */
+        .ranking-list { list-style: none; }
+        .ranking-item {
+            display: flex; align-items: center; gap: 0.75rem;
+            padding: 0.6rem 0;
+            border-bottom: 1px solid var(--border);
+        }
+        .ranking-item:last-child { border-bottom: none; }
+        .ranking-pos {
+            width: 28px; height: 28px;
+            border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 0.75rem; font-weight: 800;
+            background: var(--border);
+            flex-shrink: 0;
+        }
+        .ranking-item:nth-child(1) .ranking-pos { background: var(--gradient-1); color: white; }
+        .ranking-item:nth-child(2) .ranking-pos { background: var(--gradient-2); color: white; }
+        .ranking-item:nth-child(3) .ranking-pos { background: var(--gradient-3); color: white; }
+        .ranking-name { flex: 1; font-size: 0.85rem; }
+        .ranking-team-info { font-size: 0.7rem; color: var(--text-muted); }
+        .ranking-value { font-weight: 700; font-size: 0.95rem; }
+
+        /* Progress bars */
+        .progress-bar-container { margin-bottom: 0.75rem; }
+        .progress-label {
+            display: flex; justify-content: space-between;
+            font-size: 0.8rem; margin-bottom: 0.3rem;
+        }
+        .progress-track {
+            height: 8px;
+            background: var(--bg);
+            border-radius: 4px;
+            overflow: hidden;
+        }
+        .progress-fill {
+            height: 100%;
+            border-radius: 4px;
+            transition: width 0.6s ease;
+        }
+
+        /* Data table */
+        .table-container { overflow-x: auto; max-height: 500px; overflow-y: auto; }
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.8rem;
+        }
+        .data-table thead { position: sticky; top: 0; z-index: 10; }
+        .data-table th {
+            background: var(--bg);
+            padding: 0.75rem 0.5rem;
+            text-align: left;
+            font-weight: 700;
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--text-muted);
+            cursor: pointer;
+            user-select: none;
+            white-space: nowrap;
+        }
+        .data-table th:hover { color: var(--primary-light); }
+        .data-table th .sort-icon { margin-left: 0.25rem; }
+        .data-table td {
+            padding: 0.6rem 0.5rem;
+            border-bottom: 1px solid var(--border);
+        }
+        .data-table tbody tr { transition: background 0.15s; }
+        .data-table tbody tr:hover { background: var(--bg-card-hover); }
+
+        .badge {
+            display: inline-block;
+            padding: 0.15rem 0.5rem;
+            border-radius: 999px;
+            font-size: 0.7rem;
+            font-weight: 700;
+        }
+        .badge-frc { background: rgba(99,102,241,0.2); color: #a5b4fc; }
+        .badge-ftc { background: rgba(34,197,94,0.2); color: #86efac; }
+
+        .no-data { color: var(--text-muted); font-style: italic; }
+
+        /* Responsive */
+        @media (max-width: 1024px) {
+            .dashboard-grid { grid-template-columns: 1fr; }
+        }
+        @media (max-width: 768px) {
+            .header, .filters, .main { padding: 1rem; }
+            .kpi-grid { grid-template-columns: repeat(2, 1fr); }
+            .kpi-value { font-size: 1.5rem; }
+        }
+        @media (max-width: 480px) {
+            .kpi-grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="header-left">
+            <div class="logo">S</div>
+            <div>
+                <h1>Dashboard de Capacitação stemOS</h1>
+                <p>Portal de Ensino — Conclusões por Equipe</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="filters">
+        <div class="filter-group">
+            <label>Estado</label>
+            <select id="filterState"><option value="">Todos os estados</option></select>
+        </div>
+        <div class="filter-group">
+            <label>Modalidade</label>
+            <select id="filterModality">
+                <option value="">Todas</option>
+                <option value="FRC">FRC</option>
+                <option value="FTC">FTC</option>
+            </select>
+        </div>
+        <div class="filter-group">
+            <label>Buscar equipe</label>
+            <input type="text" id="filterTeam" placeholder="Nome da equipe...">
+        </div>
+        <button class="btn-reset" onclick="resetFilters()">Limpar filtros</button>
+    </div>
+
+    <div class="main">
+        <div class="kpi-grid" id="kpiGrid"></div>
+
+        <div class="dashboard-grid">
+            <div class="card">
+                <div class="card-title">&#x1F5FA; Mapa do Brasil — Dados por Estado</div>
+                <div class="map-container" id="mapContainer"></div>
+            </div>
+            <div class="card">
+                <div class="card-title">&#x1F3C6; Top 10 Equipes — Certificados</div>
+                <ul class="ranking-list" id="rankingList"></ul>
+            </div>
+        </div>
+
+        <div class="dashboard-grid">
+            <div class="card">
+                <div class="card-title">&#x1F4CA; Concluintes por Estado</div>
+                <div class="chart-wrapper"><canvas id="chartBar"></canvas></div>
+            </div>
+            <div class="card">
+                <div class="card-title">&#x2699; Distribuição FRC vs FTC</div>
+                <div class="chart-wrapper" style="max-width: 350px; margin: 0 auto;"><canvas id="chartDoughnut"></canvas></div>
+            </div>
+        </div>
+
+        <div class="dashboard-grid">
+            <div class="card">
+                <div class="card-title">&#x1F4C8; Estudantes Inscritos vs Certificados por Estado</div>
+                <div class="chart-wrapper"><canvas id="chartComparison"></canvas></div>
+            </div>
+            <div class="card">
+                <div class="card-title">&#x1F3AF; Taxa de Conclusão por Modalidade</div>
+                <div id="modalityStats"></div>
+            </div>
+        </div>
+
+        <div class="card card-full" style="margin-bottom: 1.5rem;">
+            <div class="card-title">&#x1F4CB; Tabela de Equipes</div>
+            <div class="table-container">
+                <table class="data-table" id="dataTable">
+                    <thead>
+                        <tr>
+                            <th data-sort="state">Estado <span class="sort-icon"></span></th>
+                            <th data-sort="name">Equipe <span class="sort-icon"></span></th>
+                            <th data-sort="number">Número <span class="sort-icon"></span></th>
+                            <th data-sort="modality">Modalidade <span class="sort-icon"></span></th>
+                            <th data-sort="enrolled">Inscritos <span class="sort-icon"></span></th>
+                            <th data-sort="completions">Conclusões <span class="sort-icon"></span></th>
+                            <th data-sort="certified">Certificados <span class="sort-icon"></span></th>
+                            <th data-sort="rate">Taxa <span class="sort-icon"></span></th>
+                        </tr>
+                    </thead>
+                    <tbody id="tableBody"></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <div class="map-tooltip" id="mapTooltip"></div>
+
+    <script>
+    // ========== DATA ==========
+    const rawCSV = `Estado da equipe,Nome da equipe,Número da equipe,Estudantes inscritos,Conclusões (certificados),Estudantes com certificado
+PR,7th Connection FTC,30575,13,-,-
+SE,Acrônicos Tech,21223,11,-,-
+PR,Acrux Robocep,23311,11,2,2
+SC,AgroTech,19193,8,-,-
+CE,All Might,9162,3,-,-
+CE,All Might Teens,32576,4,3,2
+RJ,Alpha,20858,18,5,2
+RJ,Alpha FRC,9218,3,-,-
+MS,ALPHADROIDS,21086,18,13,4
+GO,Alphastorm,9486,3,-,-
+SP,Alphire,26456,13,7,2
+SP,Alta Voltagem,25706,15,-,-
+MG,Amigos Droids,17792,2,-,-
+PR,Ampharos,26940,1,-,-
+PA,Ananintech,19188,1,-,-
+RS,Apollo,26059,22,-,-
+TO,Ararauna,25135,1,-,-
+RN,ArretadosTech,16060,4,-,-
+RJ,Asas,32510,1,-,-
+PR,Asimov,21081,17,-,-
+PR,Atenas Spartans,22936,2,2,1
+ES,Atlas,27184,1,-,-
+MG,ATOMTECH,30540,9,53,8
+RS,BahTech,16041,6,-,-
+SC,Baiotech,26484,1,-,-
+MG,Bazinga!73,21083,11,29,5
+AL,BBTECH,9046,14,-,-
+PR,Benderminds,18066,11,-,-
+GO,BrainMachine,17728,1,-,-
+SP,Brazilian Storm,6404,3,-,-
+PR,BrontoByte,21085,14,5,2
+MS,CapiTC,26970,11,-,-
+SC,Unimate FRC,10190,7,-,-
+SC,Carvoeiros Robotech,19194,4,-,-
+RS,Cavalo Vendado,16786,2,-,-
+CE,Cluster,16053,1,-,-
+PE,Codetech,17893,9,-,-
+MA,Colossus,9675,11,-,-
+MA,Cortex,28778,10,-,-
+PB,Criadores,21078,9,5,2
+PB,Criadores do Amanhã,24529,13,3,2
+SC,CyberRain,9611,12,-,-
+PE,CYBERTECH,31168,11,3,3
+PR,Cyborgs,26977,5,6,3
+PB,Destemidos,19191,15,1,1
+MT,Dumonters,22977,15,-,-
+MA,Everest,23060,13,22,6
+MA,Falcons,23059,14,62,8
+RS,FanTech,33984,2,-,-
+DF,Federal Force,10466,13,-,-
+SP,FLASHBIO,31888,6,7,2
+MS,FRCapi,10356,17,-,-
+SC,Frog,24645,10,-,-
+AL,FTCAMB,16049,10,35,9
+SP,Highway Park Robotics,22374,11,-,-
+BA,Hydra,9163,23,3,2
+BA,Hydra FTC,16052,1,2,1
+ES,Hyobots,9485,16,4,1
+SP,IFSP SANCABOTS,31578,3,-,-
+GO,Infinity BR,8882,18,2,1
+RJ,Iron Dragons,31638,6,12,3
+CE,Ironhide,26956,6,-,-
+SP,Jactech,9458,18,-,-
+RS,JaguaRS,31200,4,2,1
+SP,Joseane Bianco Tech,31613,7,3,2
+GO,Justice FTC Team,21036,12,-,-
+PR,Kamikaze,30527,1,-,-
+GO,Krypton,9487,12,-,-
+PB,Legonautas,17731,10,5,2
+RS,Losungsjager,21342,4,-,-
+PR,Lucio,26979,5,4,2
+PR,Manna Doctors Machine,31211,1,-,-
+,Master Minds,10803,3,-,-
+SP,MecaChronos,9461,19,87,14
+PR,Mecatron,26976,2,-,-
+SP,Mega Harpy,9085,19,42,16
+MS,Mega Mentes,27390,12,-,-
+SP,Mega Snakes,31879,8,-,-
+CE,Metal Knight,9617,17,39,11
+MG,Minerskills,10019,19,4,3
+RS,Mont,9305,16,11,8
+MT,Mtech,9603,8,-,-
+PR,Nautilus Robotics,31442,7,-,-
+PE,NEWGEN LEADERS,17799,11,-,-
+GO,Nexus,23501,2,-,-
+RJ,Nine Tails,9219,1,-,-
+PE,North Lions,9045,8,5,4
+RJ,NTIGERS,31858,5,2,2
+MS,Oratrix tech,23073,2,-,-
+PR,OSÍRIS,31460,2,-,-
+GO,OUTPUT Jundiaí,21069,6,-,-
+PR,Overclock,30666,4,5,2
+RN,P0T1BAT,9048,13,10,9
+PA,PARATECH,17800,2,1,1
+PA,Paratech FTC,22978,2,-,-
+PE,Princess Tech,27094,1,-,-
+AM,Prodixy,16050,12,14,3
+PR,Quimera,21222,15,3,2
+PR,Ragnarok FB,24527,21,-,-
+CE,Raptors Robotics,23072,7,6,2
+PE,Rev Atom,16058,12,-,-
+GO,Riverpollo,26963,5,-,-
+SP,Robonáticos,7565,1,-,-
+PB,ROBOSSAUROS,16043,11,-,-
+DF,Robot's District,9484,7,-,-
+SP,Sanja Storm,18613,14,1,1
+CE,SEASIDE Robotics #11094,11094,1,-,-
+RN,SESI BAT TECH,17742,2,-,-
+SP,SESI BUG HUNTERS,31949,3,4,2
+PI,SESI FoR Tech,31650,10,-,-
+MG,SESI SENAI Atomiic,9110,1,-,-
+RN,Sesi Senai ipêv4,9657,15,1,1
+SP,SESI SENAI Megazord,7563,1,-,-
+SC,SESI SENAI SC BETA,16063,11,-,-
+SC,SESI SENAI SC SUNRISE,28782,9,18,5
+SP,SESI SENAI Sharks,9199,2,-,-
+PR,SESI SENAI SteamPunk Monkey FRC,9049,12,7,2
+GO,Sinergy,23502,13,-,-
+GO,Sirius,10345,12,-,-
+PR,Sirius ROBOCEP,31737,3,1,1
+PR,sky landerz,30764,1,2,1
+PR,Skywalker,21084,11,-,-
+PR,Snake Team,26971,15,19,4
+PE,Space Tech,23504,12,4,3
+CE,Spartan,19192,14,39,5
+MG,STARBOTS,16055,10,-,-
+SP,Stardust,9200,4,-,-
+PR,Stellar Tech,26978,1,-,-
+SC,Tainha Tec,24531,5,-,-
+MG,Tech Bros,17729,7,-,-
+ES,Tech Dragons,26960,6,-,-
+RJ,Tech Fênix,23055,14,-,-
+MS,Tech Vikings,27391,9,-,-
+SC,TechMaker Challenge,23069,4,-,-
+SC,Techmaker Robotics,9047,13,-,-
+MG,TechZeus,22708,15,-,-
+PA,TecnoXingu,23560,19,-,-
+RS,TecRobot,9166,19,9,7
+MS,Tera Robotics,17730,33,11,5
+PR,The Gears TET,24555,12,-,-
+SP,Thunderbóticos,10330,7,-,-
+PR,Titanium,29079,6,-,-
+RJ,Tucanus,9050,11,-,-
+TO,Tucuna,26590,2,-,-
+MT,Tuiutech,9604,5,-,-
+MS,TupiTech,16056,7,-,-
+RS,Under Ctrl,14391,4,5,1
+SC,Unimate FTC,24557,3,-,-
+PE,Unity Sunset,22660,9,3,2
+PR,Vibranium,28798,8,-,-
+SC,West Sharks,24823,12,-,-
+SC,Zenith,26969,3,-,-
+CE,Zenkai,32577,6,11,5`;
+
+    function parseCSV(csv) {
+        const lines = csv.trim().split('\n');
+        return lines.slice(1).map(line => {
+            const parts = line.split(',');
+            const num = parseInt(parts[2]);
+            return {
+                state: parts[0] || 'N/D',
+                name: parts[1],
+                number: num,
+                modality: num < 11000 ? 'FRC' : 'FTC',
+                enrolled: parseInt(parts[3]) || 0,
+                completions: parts[4] === '-' ? 0 : parseInt(parts[4]) || 0,
+                certified: parts[5] === '-' ? 0 : parseInt(parts[5]) || 0
+            };
+        });
+    }
+
+    const allData = parseCSV(rawCSV);
+
+    // ========== STATE NAMES ==========
+    const stateNames = {
+        AC:'Acre',AL:'Alagoas',AP:'Amapá',AM:'Amazonas',BA:'Bahia',CE:'Ceará',
+        DF:'Distrito Federal',ES:'Espírito Santo',GO:'Goiás',MA:'Maranhão',
+        MT:'Mato Grosso',MS:'Mato Grosso do Sul',MG:'Minas Gerais',PA:'Pará',
+        PB:'Paraíba',PR:'Paraná',PE:'Pernambuco',PI:'Piauí',RJ:'Rio de Janeiro',
+        RN:'Rio Grande do Norte',RS:'Rio Grande do Sul',RO:'Rondônia',RR:'Roraima',
+        SC:'Santa Catarina',SP:'São Paulo',SE:'Sergipe',TO:'Tocantins','N/D':'Não definido'
+    };
+
+    // ========== BRAZIL MAP SVG PATHS ==========
+    const brazilStates = {
+        AM: "M 82 95 L 95 78 L 115 72 L 148 72 L 165 65 L 182 72 L 190 88 L 182 108 L 168 118 L 148 125 L 128 128 L 108 122 L 92 112 Z",
+        RR: "M 120 30 L 135 22 L 155 25 L 162 42 L 155 58 L 140 62 L 125 55 L 118 42 Z",
+        AP: "M 210 28 L 222 22 L 235 30 L 238 48 L 228 62 L 215 58 L 208 45 Z",
+        PA: "M 168 68 L 195 62 L 218 65 L 245 72 L 262 82 L 258 98 L 248 112 L 232 118 L 212 115 L 192 108 L 178 98 L 172 85 Z",
+        MA: "M 262 82 L 278 75 L 298 78 L 308 88 L 305 102 L 292 112 L 275 108 L 262 98 Z",
+        PI: "M 298 88 L 312 85 L 325 92 L 328 108 L 322 122 L 308 125 L 298 115 L 295 102 Z",
+        CE: "M 325 78 L 342 72 L 358 78 L 358 92 L 348 102 L 335 105 L 325 98 L 322 88 Z",
+        RN: "M 358 78 L 375 75 L 385 82 L 382 95 L 370 100 L 358 95 Z",
+        PB: "M 358 98 L 375 95 L 388 100 L 385 110 L 372 115 L 358 110 Z",
+        PE: "M 348 108 L 365 105 L 388 110 L 392 118 L 378 125 L 355 122 L 345 115 Z",
+        AL: "M 372 122 L 388 118 L 395 128 L 385 135 L 372 132 Z",
+        SE: "M 368 135 L 382 132 L 390 138 L 382 145 L 370 142 Z",
+        BA: "M 295 118 L 318 112 L 342 118 L 365 128 L 378 142 L 372 165 L 355 178 L 332 182 L 308 175 L 292 162 L 285 142 Z",
+        TO: "M 232 112 L 252 108 L 268 115 L 275 132 L 268 152 L 252 158 L 238 152 L 230 135 Z",
+        GO: "M 248 158 L 268 152 L 288 158 L 298 172 L 292 188 L 275 195 L 258 190 L 248 178 Z",
+        DF: "M 282 170 L 290 168 L 295 175 L 288 178 L 282 175 Z",
+        MT: "M 148 128 L 178 118 L 208 122 L 232 132 L 242 152 L 235 172 L 218 185 L 192 188 L 168 180 L 152 165 L 145 148 Z",
+        MS: "M 208 188 L 228 182 L 248 188 L 258 205 L 248 222 L 232 228 L 215 222 L 205 208 Z",
+        MG: "M 288 162 L 312 158 L 338 165 L 358 178 L 358 202 L 342 218 L 318 222 L 298 215 L 282 202 L 278 182 Z",
+        ES: "M 358 182 L 378 178 L 388 192 L 382 205 L 365 208 L 358 198 Z",
+        RJ: "M 338 222 L 358 218 L 375 225 L 372 235 L 355 238 L 338 232 Z",
+        SP: "M 265 218 L 288 212 L 315 218 L 335 228 L 332 245 L 312 252 L 288 248 L 268 238 Z",
+        PR: "M 258 248 L 278 242 L 302 248 L 315 258 L 308 272 L 288 278 L 268 272 L 255 262 Z",
+        SC: "M 285 278 L 302 275 L 318 282 L 315 295 L 300 298 L 285 292 Z",
+        RS: "M 268 295 L 288 288 L 308 295 L 315 312 L 302 328 L 282 332 L 265 322 L 258 308 Z",
+        RO: "M 108 128 L 132 122 L 152 130 L 158 148 L 148 165 L 128 168 L 112 158 L 105 142 Z",
+        AC: "M 42 128 L 62 122 L 88 125 L 105 135 L 98 152 L 78 158 L 55 152 L 40 142 Z",
+    };
+
+    // ========== FILTERS ==========
+    const filterState = document.getElementById('filterState');
+    const filterModality = document.getElementById('filterModality');
+    const filterTeam = document.getElementById('filterTeam');
+
+    // Populate states
+    const states = [...new Set(allData.map(d => d.state))].filter(s => s !== 'N/D').sort();
+    states.forEach(s => {
+        const opt = document.createElement('option');
+        opt.value = s;
+        opt.textContent = `${s} — ${stateNames[s] || s}`;
+        filterState.appendChild(opt);
+    });
+
+    function getFilteredData() {
+        let data = [...allData];
+        const sv = filterState.value;
+        const mv = filterModality.value;
+        const tv = filterTeam.value.toLowerCase();
+        if (sv) data = data.filter(d => d.state === sv);
+        if (mv) data = data.filter(d => d.modality === mv);
+        if (tv) data = data.filter(d => d.name.toLowerCase().includes(tv));
+        return data;
+    }
+
+    filterState.addEventListener('change', updateDashboard);
+    filterModality.addEventListener('change', updateDashboard);
+    filterTeam.addEventListener('input', updateDashboard);
+
+    function resetFilters() {
+        filterState.value = '';
+        filterModality.value = '';
+        filterTeam.value = '';
+        updateDashboard();
+    }
+
+    // ========== KPI CARDS ==========
+    function updateKPIs(data) {
+        const totalTeams = data.length;
+        const totalEnrolled = data.reduce((s, d) => s + d.enrolled, 0);
+        const totalCompletions = data.reduce((s, d) => s + d.completions, 0);
+        const totalCertified = data.reduce((s, d) => s + d.certified, 0);
+        const frcCount = data.filter(d => d.modality === 'FRC').length;
+        const ftcCount = data.filter(d => d.modality === 'FTC').length;
+        const avgRate = totalEnrolled > 0 ? ((totalCertified / totalEnrolled) * 100).toFixed(1) : '0.0';
+
+        const kpis = [
+            { icon: '&#x1F3EB;', value: totalTeams, label: 'Equipes' },
+            { icon: '&#x1F393;', value: totalEnrolled, label: 'Estudantes Inscritos' },
+            { icon: '&#x1F4DC;', value: totalCompletions, label: 'Conclusões Totais' },
+            { icon: '&#x2705;', value: totalCertified, label: 'Estudantes Certificados' },
+            { icon: '&#x1F4CA;', value: `${avgRate}%`, label: 'Taxa de Certificação' },
+        ];
+
+        document.getElementById('kpiGrid').innerHTML = kpis.map(k => `
+            <div class="kpi-card">
+                <div class="kpi-icon">${k.icon}</div>
+                <div class="kpi-value">${k.value}</div>
+                <div class="kpi-label">${k.label}</div>
+            </div>
+        `).join('');
+    }
+
+    // ========== MAP ==========
+    function buildMap() {
+        const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+        svg.setAttribute('viewBox', '20 10 400 340');
+        svg.setAttribute('preserveAspectRatio', 'xMidYMid meet');
+
+        Object.entries(brazilStates).forEach(([code, path]) => {
+            const el = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+            el.setAttribute('d', path);
+            el.setAttribute('data-state', code);
+            el.setAttribute('fill', '#334155');
+
+            // State label
+            const bbox = getPathCenter(path);
+            const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+            text.setAttribute('x', bbox.x);
+            text.setAttribute('y', bbox.y);
+            text.setAttribute('text-anchor', 'middle');
+            text.setAttribute('dominant-baseline', 'central');
+            text.setAttribute('fill', 'white');
+            text.setAttribute('font-size', '8');
+            text.setAttribute('font-weight', '700');
+            text.setAttribute('pointer-events', 'none');
+            text.textContent = code;
+
+            svg.appendChild(el);
+            svg.appendChild(text);
+        });
+
+        document.getElementById('mapContainer').innerHTML = '';
+        document.getElementById('mapContainer').appendChild(svg);
+    }
+
+    function getPathCenter(d) {
+        const nums = d.match(/[\d.]+/g).map(Number);
+        let sumX = 0, sumY = 0, count = 0;
+        for (let i = 0; i < nums.length; i += 2) {
+            sumX += nums[i];
+            sumY += nums[i + 1];
+            count++;
+        }
+        return { x: sumX / count, y: sumY / count };
+    }
+
+    function getColorScale(value, max) {
+        if (value === 0) return '#334155';
+        const t = Math.min(value / Math.max(max, 1), 1);
+        const r = Math.round(99 + (34 - 99) * t);
+        const g = Math.round(102 + (197 - 102) * t);
+        const b = Math.round(241 + (94 - 241) * t);
+        return `rgb(${r},${g},${b})`;
+    }
+
+    function updateMap(data) {
+        const stateData = {};
+        data.forEach(d => {
+            if (!stateData[d.state]) stateData[d.state] = { teams: 0, enrolled: 0, completions: 0, certified: 0 };
+            stateData[d.state].teams++;
+            stateData[d.state].enrolled += d.enrolled;
+            stateData[d.state].completions += d.completions;
+            stateData[d.state].certified += d.certified;
+        });
+
+        const maxCert = Math.max(...Object.values(stateData).map(s => s.certified), 1);
+
+        document.querySelectorAll('#mapContainer svg path').forEach(el => {
+            const code = el.getAttribute('data-state');
+            const sd = stateData[code];
+            el.setAttribute('fill', sd ? getColorScale(sd.certified, maxCert) : '#1e293b');
+
+            el.onmouseenter = (e) => {
+                const tooltip = document.getElementById('mapTooltip');
+                const name = stateNames[code] || code;
+                if (sd) {
+                    const rate = sd.enrolled > 0 ? ((sd.certified / sd.enrolled) * 100).toFixed(1) : '0.0';
+                    tooltip.innerHTML = `
+                        <h4>${code} — ${name}</h4>
+                        <div class="tt-row"><span class="tt-label">Equipes:</span><span class="tt-value">${sd.teams}</span></div>
+                        <div class="tt-row"><span class="tt-label">Inscritos:</span><span class="tt-value">${sd.enrolled}</span></div>
+                        <div class="tt-row"><span class="tt-label">Conclusões:</span><span class="tt-value">${sd.completions}</span></div>
+                        <div class="tt-row"><span class="tt-label">Certificados:</span><span class="tt-value">${sd.certified}</span></div>
+                        <div class="tt-row"><span class="tt-label">Taxa:</span><span class="tt-value">${rate}%</span></div>
+                    `;
+                } else {
+                    tooltip.innerHTML = `<h4>${code} — ${name}</h4><div class="tt-row"><span class="tt-label">Sem dados</span></div>`;
+                }
+                tooltip.style.display = 'block';
+            };
+            el.onmousemove = (e) => {
+                const tooltip = document.getElementById('mapTooltip');
+                tooltip.style.left = (e.clientX + 15) + 'px';
+                tooltip.style.top = (e.clientY - 10) + 'px';
+            };
+            el.onmouseleave = () => {
+                document.getElementById('mapTooltip').style.display = 'none';
+            };
+            el.onclick = () => {
+                if (filterState.value === code) {
+                    filterState.value = '';
+                } else {
+                    filterState.value = code;
+                }
+                updateDashboard();
+            };
+        });
+    }
+
+    // ========== CHARTS ==========
+    let chartBar, chartDoughnut, chartComparison;
+
+    function updateCharts(data) {
+        // Aggregate by state
+        const stateAgg = {};
+        data.forEach(d => {
+            if (d.state === 'N/D') return;
+            if (!stateAgg[d.state]) stateAgg[d.state] = { enrolled: 0, completions: 0, certified: 0 };
+            stateAgg[d.state].enrolled += d.enrolled;
+            stateAgg[d.state].completions += d.completions;
+            stateAgg[d.state].certified += d.certified;
+        });
+
+        const sortedStates = Object.entries(stateAgg).sort((a, b) => b[1].certified - a[1].certified);
+        const labels = sortedStates.map(s => s[0]);
+        const certified = sortedStates.map(s => s[1].certified);
+        const completions = sortedStates.map(s => s[1].completions);
+
+        // Bar chart
+        if (chartBar) chartBar.destroy();
+        chartBar = new Chart(document.getElementById('chartBar'), {
+            type: 'bar',
+            data: {
+                labels,
+                datasets: [
+                    {
+                        label: 'Conclusões',
+                        data: completions,
+                        backgroundColor: 'rgba(99,102,241,0.7)',
+                        borderRadius: 4,
+                    },
+                    {
+                        label: 'Certificados',
+                        data: certified,
+                        backgroundColor: 'rgba(34,197,94,0.7)',
+                        borderRadius: 4,
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                plugins: { legend: { labels: { color: '#94a3b8' } } },
+                scales: {
+                    x: { ticks: { color: '#94a3b8' }, grid: { color: 'rgba(51,65,85,0.5)' } },
+                    y: { ticks: { color: '#94a3b8' }, grid: { color: 'rgba(51,65,85,0.5)' } }
+                }
+            }
+        });
+
+        // Doughnut
+        const frcData = data.filter(d => d.modality === 'FRC');
+        const ftcData = data.filter(d => d.modality === 'FTC');
+        if (chartDoughnut) chartDoughnut.destroy();
+        chartDoughnut = new Chart(document.getElementById('chartDoughnut'), {
+            type: 'doughnut',
+            data: {
+                labels: ['FRC', 'FTC'],
+                datasets: [{
+                    data: [frcData.length, ftcData.length],
+                    backgroundColor: ['rgba(99,102,241,0.8)', 'rgba(34,197,94,0.8)'],
+                    borderColor: ['#6366f1', '#22c55e'],
+                    borderWidth: 2,
+                }]
+            },
+            options: {
+                responsive: true,
+                cutout: '65%',
+                plugins: {
+                    legend: { labels: { color: '#94a3b8', font: { size: 14 } } },
+                }
+            }
+        });
+
+        // Comparison chart
+        const enrolledArr = sortedStates.map(s => s[1].enrolled);
+        const certArr = sortedStates.map(s => s[1].certified);
+        if (chartComparison) chartComparison.destroy();
+        chartComparison = new Chart(document.getElementById('chartComparison'), {
+            type: 'bar',
+            data: {
+                labels,
+                datasets: [
+                    {
+                        label: 'Inscritos',
+                        data: enrolledArr,
+                        backgroundColor: 'rgba(59,130,246,0.6)',
+                        borderRadius: 4,
+                    },
+                    {
+                        label: 'Certificados',
+                        data: certArr,
+                        backgroundColor: 'rgba(245,158,11,0.6)',
+                        borderRadius: 4,
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                plugins: { legend: { labels: { color: '#94a3b8' } } },
+                scales: {
+                    x: { ticks: { color: '#94a3b8' }, grid: { color: 'rgba(51,65,85,0.5)' } },
+                    y: { ticks: { color: '#94a3b8' }, grid: { color: 'rgba(51,65,85,0.5)' } }
+                }
+            }
+        });
+    }
+
+    // ========== MODALITY STATS ==========
+    function updateModalityStats(data) {
+        const frc = data.filter(d => d.modality === 'FRC');
+        const ftc = data.filter(d => d.modality === 'FTC');
+
+        function calcStats(arr) {
+            const enrolled = arr.reduce((s, d) => s + d.enrolled, 0);
+            const certified = arr.reduce((s, d) => s + d.certified, 0);
+            const completions = arr.reduce((s, d) => s + d.completions, 0);
+            const rate = enrolled > 0 ? ((certified / enrolled) * 100).toFixed(1) : '0.0';
+            return { teams: arr.length, enrolled, completions, certified, rate };
+        }
+
+        const frcS = calcStats(frc);
+        const ftcS = calcStats(ftc);
+        const maxEnrolled = Math.max(frcS.enrolled, ftcS.enrolled, 1);
+
+        document.getElementById('modalityStats').innerHTML = `
+            <div style="margin-bottom:1.5rem;">
+                <h3 style="font-size:0.95rem;margin-bottom:0.75rem;color:#a5b4fc;">FRC <span style="color:var(--text-muted);font-weight:400;">(${frcS.teams} equipes)</span></h3>
+                <div class="progress-bar-container">
+                    <div class="progress-label"><span>Inscritos</span><span>${frcS.enrolled}</span></div>
+                    <div class="progress-track"><div class="progress-fill" style="width:${(frcS.enrolled/maxEnrolled)*100}%;background:var(--gradient-1);"></div></div>
+                </div>
+                <div class="progress-bar-container">
+                    <div class="progress-label"><span>Conclusões</span><span>${frcS.completions}</span></div>
+                    <div class="progress-track"><div class="progress-fill" style="width:${frcS.enrolled > 0 ? (frcS.completions/frcS.enrolled)*100 : 0}%;background:var(--gradient-2);"></div></div>
+                </div>
+                <div class="progress-bar-container">
+                    <div class="progress-label"><span>Certificados</span><span>${frcS.certified} (${frcS.rate}%)</span></div>
+                    <div class="progress-track"><div class="progress-fill" style="width:${frcS.enrolled > 0 ? (frcS.certified/frcS.enrolled)*100 : 0}%;background:var(--gradient-3);"></div></div>
+                </div>
+            </div>
+            <div>
+                <h3 style="font-size:0.95rem;margin-bottom:0.75rem;color:#86efac;">FTC <span style="color:var(--text-muted);font-weight:400;">(${ftcS.teams} equipes)</span></h3>
+                <div class="progress-bar-container">
+                    <div class="progress-label"><span>Inscritos</span><span>${ftcS.enrolled}</span></div>
+                    <div class="progress-track"><div class="progress-fill" style="width:${(ftcS.enrolled/maxEnrolled)*100}%;background:var(--gradient-1);"></div></div>
+                </div>
+                <div class="progress-bar-container">
+                    <div class="progress-label"><span>Conclusões</span><span>${ftcS.completions}</span></div>
+                    <div class="progress-track"><div class="progress-fill" style="width:${ftcS.enrolled > 0 ? (ftcS.completions/ftcS.enrolled)*100 : 0}%;background:var(--gradient-2);"></div></div>
+                </div>
+                <div class="progress-bar-container">
+                    <div class="progress-label"><span>Certificados</span><span>${ftcS.certified} (${ftcS.rate}%)</span></div>
+                    <div class="progress-track"><div class="progress-fill" style="width:${ftcS.enrolled > 0 ? (ftcS.certified/ftcS.enrolled)*100 : 0}%;background:var(--gradient-3);"></div></div>
+                </div>
+            </div>
+        `;
+    }
+
+    // ========== RANKING ==========
+    function updateRanking(data) {
+        const top = [...data].filter(d => d.certified > 0).sort((a, b) => b.certified - a.certified).slice(0, 10);
+        document.getElementById('rankingList').innerHTML = top.length === 0
+            ? '<li class="no-data" style="padding:1rem;">Nenhuma equipe com certificados nos filtros atuais.</li>'
+            : top.map((d, i) => `
+                <li class="ranking-item">
+                    <div class="ranking-pos">${i + 1}</div>
+                    <div style="flex:1">
+                        <div class="ranking-name">${d.name}</div>
+                        <div class="ranking-team-info">${d.state} &middot; #${d.number} &middot; <span class="badge ${d.modality === 'FRC' ? 'badge-frc' : 'badge-ftc'}">${d.modality}</span></div>
+                    </div>
+                    <div style="text-align:right">
+                        <div class="ranking-value">${d.certified} <span style="color:var(--text-muted);font-size:0.75rem;">cert.</span></div>
+                        <div style="font-size:0.7rem;color:var(--text-muted);">${d.enrolled} inscritos</div>
+                    </div>
+                </li>
+            `).join('');
+    }
+
+    // ========== TABLE ==========
+    let sortCol = 'certified';
+    let sortDir = -1;
+
+    function updateTable(data) {
+        const sorted = [...data].sort((a, b) => {
+            let va = a[sortCol], vb = b[sortCol];
+            if (typeof va === 'string') va = va.toLowerCase();
+            if (typeof vb === 'string') vb = vb.toLowerCase();
+            if (va < vb) return -1 * sortDir;
+            if (va > vb) return 1 * sortDir;
+            return 0;
+        });
+
+        document.getElementById('tableBody').innerHTML = sorted.map(d => {
+            const rate = d.enrolled > 0 ? ((d.certified / d.enrolled) * 100).toFixed(1) : '0.0';
+            return `<tr>
+                <td><strong>${d.state}</strong></td>
+                <td>${d.name}</td>
+                <td>${d.number}</td>
+                <td><span class="badge ${d.modality === 'FRC' ? 'badge-frc' : 'badge-ftc'}">${d.modality}</span></td>
+                <td>${d.enrolled}</td>
+                <td>${d.completions || '-'}</td>
+                <td>${d.certified || '-'}</td>
+                <td>${rate}%</td>
+            </tr>`;
+        }).join('');
+
+        // Sort indicators
+        document.querySelectorAll('.data-table th').forEach(th => {
+            const col = th.dataset.sort;
+            const icon = th.querySelector('.sort-icon');
+            if (col === sortCol) {
+                icon.textContent = sortDir === 1 ? ' ▲' : ' ▼';
+            } else {
+                icon.textContent = '';
+            }
+        });
+    }
+
+    document.querySelectorAll('.data-table th').forEach(th => {
+        th.addEventListener('click', () => {
+            const col = th.dataset.sort;
+            if (!col) return;
+            if (sortCol === col) { sortDir *= -1; }
+            else { sortCol = col; sortDir = -1; }
+            updateTable(getFilteredData());
+        });
+    });
+
+    // ========== UPDATE ALL ==========
+    function updateDashboard() {
+        const data = getFilteredData();
+        updateKPIs(data);
+        updateMap(data);
+        updateCharts(data);
+        updateModalityStats(data);
+        updateRanking(data);
+        updateTable(data);
+    }
+
+    // ========== INIT ==========
+    buildMap();
+    updateDashboard();
+    </script>
+</body>
+</html>
